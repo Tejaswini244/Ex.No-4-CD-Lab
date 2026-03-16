@@ -15,8 +15,83 @@ To write a YACC program to recognize a valid variable which starts with a letter
 8.	Enter a statement as input and the valid variables are identified as output.
 ## PROGRAM
 
-## Output
+# expr4.l
 
+```
+
+%{
+#include "expr4.tab.h"
+%}
+
+%%
+
+[a-zA-Z][a-zA-Z0-9]*    { return VARIABLE; }
+.|\n                    { return INVALID; }
+
+%%
+int yywrap() {
+    return 1;
+}
+
+```
+
+
+
+
+
+
+# expr4.y
+
+```
+%{
+#include <stdio.h>
+#include <stdlib.h>
+
+int yylex(void);
+void yyerror(const char *s);
+%}
+
+%token VARIABLE INVALID
+
+%%
+
+input:
+    VARIABLE { printf("Valid variable name\n"); }
+  | INVALID  { printf("Invalid variable name\n"); }
+  ;
+
+%%
+
+int main() 
+{
+    printf("Enter a variable name: ");
+    yyparse();
+    return 0;
+}
+
+void yyerror(const char *s) 
+{
+    // we handle invalid input in the grammar, so this can stay empty
+}
+
+
+```
+## Output
+```
+C:\GnuWin32\bin>flex expr4.1
+C:\GnuWin32\bin>bison expr4.y -d
+C:\GnuWin32\bin>gcc expr4.tab.c lex.yy.c
+C:\GnuWin32\bin>a
+Enter a variable name: int a,b;
+Valid variable name
+C:\GnuWin32\bin>a
+Enter a variable name: x=b++
+Valid variable name
+C:\GnuWin32\bin>a
+Enter a variable name: 96
+Invalid variable name
+C:\GnuWin32\bin>
+```
 
 ## Result
 
